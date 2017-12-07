@@ -19,4 +19,7 @@ Port 3000 will be accessible
 5) To access MMT, go to:
 http://localhost:3000
 
+6) To access /bin/bash shell within MMT container, type this:
+sh shell.sh
+
 
