@@ -9,17 +9,20 @@ Find this file and download it:
 cmr-dev-system-uberjar.jar
 Put this file in mmt/docker/libs
 
-3) To build the mmt docker image, type:
+3) Request application.yml and put that in docker/config 
+directory.
+
+4) To build the mmt docker image, type:
 sh build.sh
 
-4) To launch the mmt docker image, type:
+5) To launch the mmt docker image, type:
 sh run.sh
 Port 3000 will be accessible
 
-5) To access MMT, go to:
+6) To access MMT, go to:
 http://localhost:3000
 
-6) To access /bin/bash shell within MMT container, type this:
+7) To access /bin/bash shell within MMT container, type this:
 sh shell.sh
 
 
