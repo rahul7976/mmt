@@ -24,5 +24,9 @@ http://localhost:3000
 
 7) To access /bin/bash shell within MMT container, type this:
 sh shell.sh
+To access the shell as ROOT, type:
+sh root.sh
+
+
 
 
