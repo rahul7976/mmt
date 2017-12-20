@@ -17,6 +17,7 @@ class ManageMetadataController < ApplicationController
                   {}
                 end
 
+    @variable = MissingVariable.new
     set_variable_information
   end
 
