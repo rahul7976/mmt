@@ -6,24 +6,25 @@ class UmmPreview < JsonFile
   include ActionView::Helpers::TextHelper
   include Rails.application.routes.url_helpers
 
-  attr_accessor :resource, :forms
+  attr_accessor :data, :forms, :id, :resource_name
 
-  def initialize(schema_type:, preview_filename:, resource:)
+  def initialize(schema_type:, preview_filename:, data:, id:, resource_name:)
     super(schema_type, preview_filename)
 
-    @forms = parsed_json.fetch('forms', []).map { |form_json| UmmPreviewForm.new(schema_type: schema_type, form_json: form_json, resource: resource) }
+    @forms = parsed_json.fetch('forms', []).map { |form_json| UmmPreviewForm.new(schema_type: schema_type, form_json: form_json, data: data, id: id, resource_name: resource_name) }
   end
 end
 
 # :nodoc:
 class UmmPreviewForm < UmmPreview
-  attr_accessor :form, :data
+  attr_accessor :form
 
-  def initialize(schema_type:, form_json:, resource:)
+  def initialize(schema_type:, form_json:, data:, id:, resource_name:)
     @schema_type = schema_type
     @form = form_json
-    @resource = resource
-    @data = resource.draft
+    @data = data
+    @id = id
+    @resource_name = resource_name
   end
 
   def title
@@ -78,7 +79,7 @@ class UmmPreviewForm < UmmPreview
         concat field['key'].titleize
 
         if resource_name.ends_with? '_draft'
-          concat(link_to("/#{resource_name.pluralize}/#{resource.id}/edit/#{form_id}##{idify_property_name(field['key'])}", class: 'hash-link') do
+          concat(link_to("/#{resource_name.pluralize}/#{id}/edit/#{form_id}##{idify_property_name(field['key'])}", class: 'hash-link') do
             concat content_tag(:i, nil, class: 'fa fa-edit')
             concat content_tag(:span, "Edit #{title}", class: 'is-invisible')
           end)
@@ -94,11 +95,8 @@ class UmmPreviewForm < UmmPreview
     end
   end
 
-  def resource_name
-    resource.class.name.underscore
-  end
-
   def idify_property_name(name)
-    "#{resource_name}_draft_#{name.underscore}"
+    draft = resource_name.include? 'draft'
+    "#{resource_name}#{'_draft' if draft}_#{name.underscore}"
   end
 end
