@@ -8,7 +8,7 @@ module PermissionManagement
   # some require identity_type (i.e. 'provider_identity' or 'system_identity')
 
   def get_permissions_for_identity_type(type:, group_id: nil)
-    permissions_list = []
+    # permissions_list = []
 
     options = { 'include_full_acl' => true,
                 'identity_type' => type,
@@ -18,12 +18,20 @@ module PermissionManagement
     options['provider'] = current_user.provider_id if type == 'provider'
 
     permissions_response = cmr_client.get_permissions(options, token)
-    if permissions_response.success?
-      permissions_list = permissions_response.body['items']
-    else
-      Rails.logger.error("Get #{type.titleize} Identity Permissions Error: #{permissions_response.inspect}")
-      flash[:error] = permissions_response.error_message
-    end
+    permissions_list = if permissions_response.success?
+                         permissions_response.body['items']
+                       else
+                         Rails.logger.error("Get #{type.titleize} Identity Permissions Error: #{permissions_response.inspect}")
+                         flash[:error] = permissions_response.error_message
+                         []
+                       end
+
+    # puts "permissions list: #{permissions_list.inspect}"
+    # puts "pp permissions list:"
+    # pp permissions_list
+    puts '!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!'
+    puts 'pretty permissions list'
+    puts JSON.pretty_generate(permissions_list)
 
     permissions_list
   end
@@ -40,7 +48,9 @@ module PermissionManagement
 
       assembled_permissions[target] = granted_permissions
     end
-
+    puts '^^^^^^^^^^^^^^^^^^^^^^^^^^^^'
+    puts 'pretty assembled permissions for table'
+    puts JSON.pretty_generate(assembled_permissions)
     assembled_permissions
   end
 
@@ -70,6 +80,11 @@ module PermissionManagement
         'granted_permissions' => granted_permissions
       }
     end
+
+    # puts "assembled_permissions_for_updating: #{assembled_permissions.inspect}"
+    puts '============================'
+    puts 'pretty assembled_permissions_for_updating'
+    puts JSON.pretty_generate(assembled_permissions)
 
     assembled_permissions
   end
@@ -114,6 +129,10 @@ module PermissionManagement
   # sort and update target permissions
   def update_target_permissions(all_permissions:, permissions_params:, targets_to_add_group: [], targets_to_update_perms: [], targets_to_remove_group: [], type:, group_id:, successes: [], fails: [])
     identity_type = "#{type}_identity"
+
+    puts '********************************'
+    puts 'in def update_target_permissions'
+    puts "all_permissions: #{JSON.pretty_generate(all_permissions)}"
 
     all_permissions.each do |full_perm|
       concept_id = full_perm['concept_id']
@@ -162,7 +181,7 @@ module PermissionManagement
   def update_permission(acl_object:, concept_id:, identity_type:, log_target:, successes: [], fails: [])
     update_permission_response = cmr_client.update_permission(acl_object, concept_id, token)
     if update_permission_response.success?
-      Rails.logger.info("#{identity_type.titleize} for target #{log_target} successfully updated by #{current_user}")
+      Rails.logger.info("#{identity_type.titleize} for target #{log_target} successfully updated by #{current_user.urs_uid}")
       successes << log_target
     else
       Rails.logger.error("Update #{identity_type.titleize} for target #{log_target} error: #{update_permission_response.inspect}")
@@ -260,5 +279,19 @@ module PermissionManagement
         fails << target
       end
     end
+  end
+
+  def assemble_all_permission_revisions(all_permissions: [], type:)
+    all_permission_revisions = {}
+    return all_permission_revisions if all_permissions.blank?
+
+    identity_type = "#{type}_identity"
+    all_permissions.each do |perm|
+      target = perm.fetch('acl', {}).fetch(identity_type, {}).fetch('target', nil)
+      revision_id = perm.fetch('revision_id', nil) # what should default be if the ACL exists?
+      all_permission_revisions[target] = revision_id
+    end
+
+    all_permission_revisions
   end
 end

@@ -2,6 +2,7 @@
 class ManageCmrController < ApplicationController
   include EchoSoap
   include ChooserEndpoints
+  include PermissionManagement
 
   before_filter :check_if_system_acl_administrator, only: :show
   before_filter :check_if_current_provider_acl_administrator, only: :show
@@ -46,6 +47,16 @@ class ManageCmrController < ApplicationController
     collections = get_datasets_for_service_implementation(params.permit(:service_interface_guid, :page_size, :page_num, :short_name))
 
     render_collections_for_chooser(collections)
+  end
+
+  # list of all permissions for provider or system to check revisions
+  def permissions_list
+    # will need to differentiate between provider and system permissions later, probably by adding (/:type) to the route
+    provider_id = current_user.provider_id
+    all_provider_permissions = get_permissions_for_identity_type(type: 'provider')
+    all_provider_permission_revisions = assemble_all_permission_revisions(all_permissions: all_provider_permissions, type: 'provider')
+
+    render json: all_provider_permission_revisions.to_json
   end
 
   private

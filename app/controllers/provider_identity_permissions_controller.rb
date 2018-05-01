@@ -25,12 +25,12 @@ class ProviderIdentityPermissionsController < ManageCmrController
     groups_response = cmr_client.get_cmr_groups(filters, token)
 
     group_list = if groups_response.success?
-                    group_list = groups_response.body.fetch('items', [])
-                  else
-                    Rails.logger.error("Get Cmr Groups Error: #{groups_response.inspect}")
-                    flash[:error] = groups_response.error_message
-                    []
-                  end
+                   groups_response.body.fetch('items', [])
+                 else
+                   Rails.logger.error("Get Cmr Groups Error: #{groups_response.inspect}")
+                   flash[:error] = groups_response.error_message
+                   []
+                 end
 
     @groups = Kaminari.paginate_array(group_list, total_count: groups_response.body.fetch('hits', 0)).page(page).per(RESULTS_PER_PAGE)
   end
@@ -42,6 +42,10 @@ class ProviderIdentityPermissionsController < ManageCmrController
 
     # assemble provider permissions for the table of checkboxes
     @group_provider_permissions = assemble_permissions_for_table(permissions: group_provider_permissions_list, type: 'provider', group_id: @group_id)
+
+    # NEW get all permissions for provider to see/check revision ids
+    @all_provider_permissions = get_permissions_for_identity_type(type: 'provider')
+    @all_provider_permission_revisions = assemble_all_permission_revisions(all_permissions: @all_provider_permissions, type: 'provider')
 
     group_response = cmr_client.get_group(@group_id, token)
     if group_response.success?
@@ -57,10 +61,23 @@ class ProviderIdentityPermissionsController < ManageCmrController
 
   def update
     @group_id = params[:id]
-    permissions_params = params[:provider_permissions]
+    # permissions_params = params[:provider_permissions]
+    permissions_params = {}
+    new_permissions_params = params[:provider_permissions]
+    puts '>>>>>>>>>>>>>>>>>> params:'
+    puts JSON.pretty_generate(params)
     redirect_to provider_identity_permissions_path and return if permissions_params.nil?
 
-    permissions_params.each { |_target, perms| perms.delete('') }
+    # permissions_params.each { |_target, perms| perms.delete('') }
+    new_permissions_params.each { |_target, target_data| target_data['permissions'].delete('') if target_data['permissions'] }
+
+    # convert new permissions structure into what the old one had
+    new_permissions_params.each do |target, target_data|
+      permissions_params[target] = target_data.fetch('permissions', [])
+    end
+    puts 'permissions params after changing back'
+    puts JSON.pretty_generate(permissions_params)
+
     all_provider_permissions = get_permissions_for_identity_type(type: 'provider')
     # assemble permissions so they can be sorted and updated
     selective_provider_permission_info = assemble_permissions_for_updating(
@@ -106,4 +123,6 @@ class ProviderIdentityPermissionsController < ManageCmrController
 
     redirect_to provider_identity_permissions_path
   end
+
+
 end

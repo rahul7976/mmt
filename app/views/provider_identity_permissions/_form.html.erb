@@ -27,20 +27,33 @@
             <% if ProviderIdentityPermissionsHelper.const_get(provider_target[1] + '_PERMISSIONS').include?(permission_option) %>
               <td class="align-c">
                 <% if @group_provider_permissions.fetch(provider_target[1], []).include?(permission_option) %>
-                  <%= check_box_tag("provider_permissions[#{provider_target[1]}][]", permission_option, true) %>
+                  <%#= check_box_tag("provider_permissions[#{provider_target[1]}][]", permission_option, true) %>
+                  <%= check_box_tag("provider_permissions[#{provider_target[1]}][permissions][]", permission_option, true) %>
                 <% else %>
-                  <%= check_box_tag("provider_permissions[#{provider_target[1]}][]", permission_option, false) %>
+                  <%#= check_box_tag("provider_permissions[#{provider_target[1]}][]", permission_option, false) %>
+                  <%= check_box_tag("provider_permissions[#{provider_target[1]}][permissions][]", permission_option, false) %>
                 <% end %>
               </td>
             <% else %>
               <td class="align-c disabled">
-                <%= check_box_tag("provider_permissions[#{provider_target[1]}][]", permission_option, false, disabled: true) %>
+                <%#= check_box_tag("provider_permissions[#{provider_target[1]}][]", permission_option, false, disabled: true) %>
+                <%= check_box_tag("provider_permissions[#{provider_target[1]}][permissions][]", permission_option, false, disabled: true) %>
               </td>
             <% end %>
           <% end %>
-
+          <% if @all_provider_permission_revisions.keys.include?(provider_target[1]) %>
+            <!-- try putting revision id here?
+            if revisions hash has the target, put it here
+            i.e. provider_permissions[#{provider_target[1]}][revision_id]
+            ¿ will need to change the check box names to be a hash with an array?
+            ¿ maybe provider_permissions[#{provider_target[1]}][permissions][] ?
+            - will need to also change how params are parsed
+          -->
+            <%= hidden_field_tag("provider_permissions[#{provider_target[1]}][revision_id]", @all_provider_permission_revisions[provider_target[1]]) %>
+          <% end %>
           <% if @group_provider_permissions.keys.include?(provider_target[1]) %>
-            <%= hidden_field_tag("provider_permissions[#{provider_target[1]}][]", '') %>
+            <%#= hidden_field_tag("provider_permissions[#{provider_target[1]}][]", '') %>
+            <%= hidden_field_tag("provider_permissions[#{provider_target[1]}][permissions][]", '') %>
           <% end %>
         </tr>
       <% end %>
@@ -51,4 +64,14 @@
 <fieldset>
   <%= submit_tag('Submit', class: 'eui-btn--blue') %>
   <%= link_to 'Cancel', :back, class: 'eui-btn' %>
+  <%= link_to 'Check Revisions', '#check-permissions-table-revisions-modal', class: 'eui-btn--blue', id: 'check-permissions-table-revisions' %>
+  <div id="check-permissions-table-revisions-modal" class="eui-modal-content">
+    <a href="javascript:void(0);" class="modal-close float-r"><i class="fa fa-times"></i><span class="is-invisible">Close</span></a>
+    <p><span class="permissions-table-revisions-text"></span></p>
+  </div>
 </fieldset>
+
+<%= javascript_tag do %>
+  <!-- Pass in revisions -->
+  window.all_provider_permission_revisions = <%= raw @all_provider_permission_revisions.to_json %>
+<% end %>
