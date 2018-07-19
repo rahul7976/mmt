@@ -13,17 +13,21 @@ class MiddlewareHealthcheck
         Rails.logger.info "Database error: #{e}"
         db_healthy = false
       end
-
-      # checks the health of launchpad
-      cmr_client = Cmr::Client.client_for_environment(Rails.configuration.cmr_env, Rails.configuration.services)
-      response = cmr_client.launchpad_healthcheck
+      conn = Faraday.new('https://apps.launchpad-sbx.nasa.gov/') do |c|
+        c.use Faraday::Adapter::NetHttp
+      end
+      response = conn.get 'healthcheck'
       launchpad_healthy = response.body == 'OK'.freeze
-      OK_RESPONSE[2] = ["{\"database\": #{db_healthy}, \"launchpad\": #{launchpad_healthy}}"]
-
-      # If launchpad is disabled then we will not report a 500 error if launchpad still fails
+      #launchpad_healthy =  launchpad_healthy.body == 'OK'.freeze
+      #get('/healthcheck')
+      #request(:get, '/healthcheck', {}, nil, {})
+      #launchpad_healthy = send(:get, '/healthcheck').body
+      OK_RESPONSE[2] = ["{\"database\":#{db_healthy}, \"launchpad\": #{launchpad_healthy}}"]
       unless ((ENV['launchpad_login_required'] != 'true' || launchpad_healthy) && db_healthy)
         OK_RESPONSE[0] = 503;
       end
+      #launchapd = Faraday.new('https://')
+      Rails.logger.info "#{OK_RESPONSE}"
       OK_RESPONSE
     else
       @app.call(env)
