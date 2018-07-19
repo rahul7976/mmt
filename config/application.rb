@@ -50,11 +50,7 @@ module Mmt
 
     # Launchpad Session Cookie name
     config.launchpad_cookie_name = 'SBXSESSION'
-    config.launchpad_cookie_name = 'SMSESSION' if ENV['launchpad_production'] == 'true'
-
-    # Launchpad Metadata
-    config.launchpad_metadata_url = 'https://auth.launchpad-sbx.nasa.gov/unauth/metadata/launchpad-sbx.idp.xml'
-    config.launchpad_metadata_url = 'https://auth.launchpad.nasa.gov/unauth/metadata/launchpad.idp.xml' if ENV['launchpad_production'] == 'true'
+    config.launchpad_cookie_name = 'SMSESSION' if ENV['launchpad_prod'] == 'true'
 
     def load_version
       version_file = "#{config.root}/version.txt"
