@@ -343,6 +343,17 @@ class ApplicationController < ActionController::Base
     all_session_keys.each { |session_key| session[session_key] = nil }
   end
 
+  def log_all_session_keys
+    all_session_keys = LAUNCHPAD_SESSION_KEYS | URS_SESSION_KEYS
+    # additional token and login keys
+    all_session_keys += %i[echo_provider_token login_method]
+
+    all_session_keys_log = all_session_keys.map { |key| "#{key}: #{session[key]}"}
+
+    Rails.logger.debug ">>>>> logging session keys"
+    Rails.logger.debug all_session_keys_log.join("\n")
+  end
+
   def ensure_at_least_one_login_method
     if both_login_methods_off?
       # if both URS and Launchpad login requirements are turned OFF, users cannot

@@ -115,16 +115,21 @@ class UsersController < ApplicationController
   private
 
   def finish_successful_login(profile)
+    Rails.logger.info "storing profile"
     # Stores additional information in the session pertaining to the user
     store_profile(profile)
-
+    log_all_session_keys
+    Rails.logger.info "set_available_providers"
     # Updates the user's available providers
     current_user.set_available_providers(token)
-
+    log_all_session_keys
+    Rails.logger.info 'get_providers'
     # Refresh (force retrieve) the list of all providers
     cmr_client.get_providers(true)
-
+    log_all_session_keys
+    Rails.logger.info "redirect_after_login"
     # Redirects the user to an appropriate location
+    log_all_session_keys
     redirect_after_login
   end
 

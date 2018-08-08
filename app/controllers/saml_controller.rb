@@ -61,9 +61,14 @@ class SamlController < UsersController
       session[:logged_in_at] = Time.now.to_i
       session[:original_logged_in_at] = Time.now.to_i
 
+      Rails.logger.debug "!!!!!!! logged session keys in saml acs valid"
+      log_all_session_keys
+
       # get the user's associated URS profile, if they don't have an associated
       # account, return to allow the redirect to prompt them to link accounts
       urs_profile = get_urs_profile_from_auid || return
+      Rails.logger.debug "!!!!!!! got urs profile"
+      log_all_session_keys
 
       finish_successful_login(urs_profile)
     else
