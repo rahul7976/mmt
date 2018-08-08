@@ -348,7 +348,13 @@ class ApplicationController < ActionController::Base
     # additional token and login keys
     all_session_keys += %i[echo_provider_token login_method]
 
-    all_session_keys_log = all_session_keys.map { |key| "#{key}: #{session[key]}"}
+    all_session_keys_log = all_session_keys.map do |key|
+      if key == :launchpad_cookie
+        "#{key}: length: #{session[key].length};;; snippet: #{session[key].truncate(50)}"
+      else
+        "#{key}: #{session[key]}"
+      end
+    end
 
     Rails.logger.debug ">>>>> logging session keys"
     Rails.logger.debug all_session_keys_log.join("\n")
