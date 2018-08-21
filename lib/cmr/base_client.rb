@@ -53,11 +53,13 @@ module Cmr
           req.headers[header] = value
         end
         req.body = body unless body.blank?
+        Rails.logger.info "keywords request: #{req.inspect}" if url.include?('keywords')
       end
       client_response = Cmr::Response.new(faraday_response)
 
       begin
         Rails.logger.info "#{self.class} Response #{method} #{url} result : Headers: #{client_response.headers} - Body Size (bytes): #{client_response.body.to_s.bytesize} - Body md5: #{Digest::MD5.hexdigest(client_response.body.to_s)} - Status: #{client_response.status} - Time: #{Time.now.to_s(:log_time)}"
+        Rails.logger.info "keywords response: #{client_response.inspect}" if url.include?('keywords')
       rescue => e
         Rails.logger.error "#{self.class} Error: #{e}"
       end
