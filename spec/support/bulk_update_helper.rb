@@ -1,6 +1,6 @@
 module Helpers
   # :nodoc:
-  module BulkUpdateHelper
+  module BulkUpdateHelpers
     def create_bulk_update(provider_id: 'MMT_2', payload: {}, admin: false)
       ActiveSupport::Notifications.instrument 'mmt.performance', activity: 'Helpers::BulkUpdateHelper#create_bulk_update' do
         bulk_update_params = payload

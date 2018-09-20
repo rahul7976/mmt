@@ -52,7 +52,8 @@ module Cmr
       end
       insert_metadata
 
-      additional_cmr_setup
+      # TODO if changing nsidc colperm, should be here
+      # additional_cmr_setup
     end
 
     def wait_for_cmr
@@ -526,12 +527,22 @@ module Cmr
         req.headers['Echo-token'] = 'mock-echo-system-token'
         req.body = '{"group_permissions": [{"group_id": "' + nsidc_group_concept + '", "permissions": ["read", "create", "update", "delete"]}, {"group_id": "' + admin_group_concept + '", "permissions": ["read", "create", "update", "delete"]}], "provider_identity": {"target": "CATALOG_ITEM_ACL", "provider_id": "NSIDC_ECS"}}'
       end
-      puts "ACL for admin and typical user to read and create catalog item ACLs for NSIDC_ECS, via access control #{resp.body}"
+      puts "ACL for admin and typical user to CRUD catalog item ACLs for NSIDC_ECS, via access control #{resp.body}"
+      resp = connection.post do |req|
+        req.url('http://localhost:3011/acls')
+        req.headers['Content-Type'] = 'application/json'
+        req.headers['Echo-token'] = 'mock-echo-system-token'
+        req.body = '{"group_permissions": [{"group_id": "' + admin_group_concept + '","permissions": ["read", "update"]}], "provider_identity": {"target": "INGEST_MANAGEMENT_ACL", "provider_id": "NSIDC_ECS"}}'
+      end
+      puts "ACL for INGEST_MANAGEMENT_ACL for admin users for NSIDC_ECS #{resp.body}"
 
       clear_cache
     end
 
     def additional_cmr_setup
+      # TODO can we remove the adding of this ACL in this method, and create it in the actual test?
+      # updating_permission_with_restricted_collections_spec
+
       # we are running these later in the sequence because one of the ACLs is for a single entry title, which is best to create after the collection has been ingested
       wait_for_indexing
 
@@ -548,7 +559,7 @@ module Cmr
         req.headers['Echo-token'] = 'mock-echo-system-token'
         req.body = '{"group_permissions": [{"permissions": ["read"], "user_type": "guest"}, {"permissions": ["read"], "user_type": "registered"}], "catalog_item_identity": {"name": "NSIDC_ECS single collection", "provider_id": "NSIDC_ECS", "collection_applicable": true, "granule_applicable": true, "collection_identifier": {"concept_ids": ["' + @nsidc_test_case_collection + '"]}}}'
       end
-      puts "Collection Permission for single entry title for NSIDC_ECS, via access control #{resp.inspect}"
+      puts "Collection Permission for single collection for NSIDC_ECS, via access control #{resp.inspect}"
 
       wait_for_indexing
 
@@ -566,7 +577,7 @@ module Cmr
     end
 
     def reindex_permitted_groups
-      # This method reindexes groups, which may be required when ACLs are added or changed in mock echo
+      # This method reindexes groups, which may be required when catalog item ACLs (collection permissions) are added or changed in mock echo
       resp = connection.post do |req|
         req.url('http://localhost:3002/jobs/reindex-collection-permitted-groups')
         req.headers['Echo-token'] = 'mock-echo-system-token'
@@ -639,6 +650,14 @@ module Cmr
         end
       end
       puts 'Done!'
+
+      wait_for_indexing
+
+      reindex_permitted_groups
+
+      wait_for_indexing
+
+      clear_cache
     end
 
     def set_concept_if_nsidc_test_case(data, response)

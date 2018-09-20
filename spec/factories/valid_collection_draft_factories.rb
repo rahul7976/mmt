@@ -7,6 +7,7 @@ FactoryGirl.define do
       draft_entry_title nil
       version nil
       collection_data_type nil
+      access_constraint_value nil
     end
 
     native_id 'full_collection_draft_id'
@@ -579,7 +580,7 @@ FactoryGirl.define do
         }
       },
       'AccessConstraints' => {
-        'Value'       => 42,
+        'Value'       => access_constraint_value || 42,
         'Description' => 'Access constraint description'
       },
       'MetadataAssociations' => [{

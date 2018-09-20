@@ -9,11 +9,11 @@ describe 'Groups Associated Permissions', reset_provider: true do
 
       # collection permissions should show as associated permission on the group page
       # only if the group has Search or Search and Order permissions
-      add_associated_permissions_to_group(group_id: group_id, name: 'Test Permission 1', permissions: [ 'read' ])
-      add_associated_permissions_to_group(group_id: group_id, name: 'Test Permission 2', permissions: [ 'read', 'order' ])
-      add_associated_permissions_to_group(group_id: group_id, name: 'Test Permission 3', permissions: [])
-      add_associated_permissions_to_group(group_id: group_id, name: 'Test Permission 4', permissions: [ 'create', 'update', 'delete'])
-      add_associated_permissions_to_group(group_id: group_id, name: 'Test Permission 5', permissions: [ 'order' ])
+      add_collection_permission_to_group(group_id: group_id, name: 'Test Permission 1', permissions: [ 'read' ])
+      add_collection_permission_to_group(group_id: group_id, name: 'Test Permission 2', permissions: [ 'read', 'order' ])
+      add_collection_permission_to_group(group_id: group_id, name: 'Test Permission 3', permissions: [])
+      add_collection_permission_to_group(group_id: group_id, name: 'Test Permission 4', permissions: [ 'create', 'update', 'delete'])
+      add_collection_permission_to_group(group_id: group_id, name: 'Test Permission 5', permissions: [ 'order' ])
 
       visit group_path(group_id)
     end

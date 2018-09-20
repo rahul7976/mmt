@@ -72,7 +72,7 @@ describe 'Creating a Service Option Assignment', reset_provider: true, js: true 
       @service_option_assignment_group = create_group(name: 'Service Option Association Group for Permissions [CREATE]', members: ['testuser'])
 
       # give the group permission to create
-      @create_permissions = add_permissions_to_group(@service_option_assignment_group['concept_id'], 'create', 'OPTION_ASSIGNMENT', 'MMT_2')
+      @create_permissions = add_provider_permissions_to_group(@service_option_assignment_group['concept_id'], 'create', 'OPTION_ASSIGNMENT', 'MMT_2')
     end
 
     after :all do

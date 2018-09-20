@@ -1,6 +1,6 @@
 module Helpers
   # :nodoc:
-  module GroupHelper
+  module GroupHelpers
     def create_group(provider_id: 'MMT_2', name: random_group_name, description: random_group_description, members: [], admin: false)
       ActiveSupport::Notifications.instrument 'mmt.performance', activity: 'Helpers::GroupHelper#create_group' do
         group_params = {
@@ -51,12 +51,14 @@ module Helpers
 
         wait_for_cmr
 
+        raise Array.wrap(response.body['errors']).join(' /// ') unless response.success?
+
         return response.body
       end
     end
 
-    def add_permissions_to_group(group_id, permissions, target, provider_id)
-      ActiveSupport::Notifications.instrument 'mmt.performance', activity: 'Helpers::GroupHelper#add_permissions_to_group' do
+    def add_provider_permissions_to_group(group_id, permissions, target, provider_id)
+      ActiveSupport::Notifications.instrument 'mmt.performance', activity: 'Helpers::GroupHelper#add_provider_permissions_to_group' do
         permission_params = {
           group_permissions: [{
             group_id: group_id,
@@ -68,16 +70,19 @@ module Helpers
           }
         }
 
-        response = cmr_client.add_group_permissions(permission_params, 'access_token')
-
-        wait_for_cmr
-
-        return response.body
+        # response = cmr_client.add_group_permissions(permission_params, 'access_token')
+        #
+        # wait_for_cmr
+        #
+        # return response.body
+        # return add_group_permissions(permission_params, 'access_token')
+        return add_group_permissions(permission_params)
       end
     end
 
-    def add_associated_permissions_to_group(group_id: 'AG1200000001-CMR', name: 'Test Permission', provider_id: 'MMT_2', permissions: ['read'])
-      ActiveSupport::Notifications.instrument 'mmt.performance', activity: 'Helpers::GroupHelper#add_permissions_to_group' do
+    def add_collection_permission_to_group(group_id: 'AG1200000001-CMR', name: 'Test Permission', provider_id: 'MMT_2', permissions: ['read'])
+      # default is for Administrators_2 group
+      ActiveSupport::Notifications.instrument 'mmt.performance', activity: 'Helpers::GroupHelper#add_collection_permission_to_group' do
         permission_params = {
           group_permissions: [
             {

@@ -28,7 +28,7 @@ describe 'Resubmitting Provider Orders' do
       before :all do
         # create a group
         @orders_group = create_group(name: 'Orders Group for Permissions [RESUBMIT]', members: ['testuser'], provider_id: 'NSIDC_ECS')
-        @resubmit_permissions = add_permissions_to_group(@orders_group['concept_id'], 'create', 'PROVIDER_ORDER_RESUBMISSION', 'NSIDC_ECS')
+        @resubmit_permissions = add_provider_permissions_to_group(@orders_group['concept_id'], 'create', 'PROVIDER_ORDER_RESUBMISSION', 'NSIDC_ECS')
       end
 
       after :all do

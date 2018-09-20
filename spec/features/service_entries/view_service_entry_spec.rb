@@ -49,7 +49,7 @@ describe 'Viewing a Service Entry', reset_provider: true do
 
     context 'when authorized to edit service entries' do
       before do
-        @update_permissions = add_permissions_to_group(@service_entry_group['concept_id'], 'update', 'EXTENDED_SERVICE', 'MMT_2')
+        @update_permissions = add_provider_permissions_to_group(@service_entry_group['concept_id'], 'update', 'EXTENDED_SERVICE', 'MMT_2')
 
         VCR.use_cassette('echo_soap/service_management_service/service_entries/view', record: :none) do
           visit service_entry_path(guid)
@@ -67,7 +67,7 @@ describe 'Viewing a Service Entry', reset_provider: true do
 
     context 'when authorized to delete service entries' do
       before do
-        @delete_permissions = add_permissions_to_group(@service_entry_group['concept_id'], 'delete', 'EXTENDED_SERVICE', 'MMT_2')
+        @delete_permissions = add_provider_permissions_to_group(@service_entry_group['concept_id'], 'delete', 'EXTENDED_SERVICE', 'MMT_2')
 
         VCR.use_cassette('echo_soap/service_management_service/service_entries/view', record: :none) do
           visit service_entry_path(guid)

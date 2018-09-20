@@ -1,7 +1,3 @@
-# test for index page, created in MMT-507
-
-require 'rails_helper'
-
 describe 'Viewing Collection Permissions', reset_provider: true do
   let(:group1_id) { 'AG1200000069-MMT_2' }
   let(:group2_id) { 'AG1200000070-MMT_2' }

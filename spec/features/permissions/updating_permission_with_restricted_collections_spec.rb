@@ -2,8 +2,6 @@
 # when there are selected collections that they do not have access to see. We need
 # to test and make sure that scenario has been prevented
 
-require 'rails_helper'
-
 describe 'Updating Collection Permissions when collections are not accessible by the user' do
   # this collection should be visible to all Registered users
   let(:entry_title_visible_to_all) { 'Near-Real-Time SSMIS EASE-Grid Daily Global Ice Concentration and Snow Extent V004' }
@@ -21,6 +19,34 @@ describe 'Updating Collection Permissions when collections are not accessible by
     restricted_concept_1 = collection_concept_from_keyword('MYD29E1D_5', 'access_token_admin')
     restricted_concept_2 = collection_concept_from_keyword('AE_SI12_3', 'access_token_admin')
 
+    # collection_permission for concept_visible_to_all
+    collection_permission_for_public_record = {
+      group_permissions: [
+        {
+          'user_type': 'guest',
+          'permissions': ['read']
+        },
+        {
+          'user_type': 'registered',
+          'permissions': ['read']
+        }
+      ],
+      catalog_item_identity: {
+        'name': 'NSIDC_ECS public single collection',
+        'provider_id': 'NSIDC_ECS',
+        'collection_applicable': true,
+        'granule_applicable': true,
+        'collection_identifier': {
+          'concept_ids': [concept_visible_to_all]
+        }
+      }
+    }
+
+    @collection_permission_for_public_record = cmr_client.add_group_permissions(collection_permission_for_public_record, 'access_token_admin').body
+    puts "published? #{@collection_permission_for_public_record.inspect}"
+
+    reindex_permitted_groups
+
     @group_name = "Test Group NSIDC_ECS #{rand(100)}"
     @group = create_group(
       name: @group_name,
@@ -34,15 +60,15 @@ describe 'Updating Collection Permissions when collections are not accessible by
     collection_permission_some_restricted = {
       group_permissions: [{
         group_id: @group['concept_id'],
-        permissions: [ "read", "order" ]
+        permissions: ['read', 'order']
       }],
       catalog_item_identity: {
-        "name": @collection_permission_some_restricted_name,
-        "provider_id": "NSIDC_ECS",
-        "collection_applicable": true,
-        "granule_applicable": true,
-        "collection_identifier": {
-          "concept_ids": [
+        'name': @collection_permission_some_restricted_name,
+        'provider_id': 'NSIDC_ECS',
+        'collection_applicable': true,
+        'granule_applicable': true,
+        'collection_identifier': {
+          'concept_ids': [
             restricted_concept_1,
             restricted_concept_2,
             concept_visible_to_all
@@ -60,15 +86,15 @@ describe 'Updating Collection Permissions when collections are not accessible by
     collection_permission_all_restricted = {
       group_permissions: [{
         group_id: @group['concept_id'],
-        permissions: [ "read", "order" ]
+        permissions: ['read', 'order']
       }],
       catalog_item_identity: {
-        "name": @collection_permission_all_restricted_name,
-        "provider_id": "NSIDC_ECS",
-        "collection_applicable": true,
-        "granule_applicable": false,
-        "collection_identifier": {
-          "concept_ids": [
+        'name': @collection_permission_all_restricted_name,
+        'provider_id': 'NSIDC_ECS',
+        'collection_applicable': true,
+        'granule_applicable': false,
+        'collection_identifier': {
+          'concept_ids': [
             restricted_concept_1,
             restricted_concept_2
           ]
@@ -83,6 +109,14 @@ describe 'Updating Collection Permissions when collections are not accessible by
 
   after :all do
     delete_group(concept_id: @group['concept_id'])
+
+    # TODO delete collection_permission_for_public_record?
+    # if so, need to reindex_permitted_groups
+    remove_group_permissions(@collection_permission_for_public_record['concept_id'])
+
+    wait_for_cmr
+
+    reindex_permitted_groups
 
     wait_for_cmr
   end
@@ -99,7 +133,7 @@ describe 'Updating Collection Permissions when collections are not accessible by
         wait_for_ajax
       end
 
-      it 'displays the collection permission edit form with 0 of 2 selected collections' do
+      it 'displays the collection permission edit form with 0 selected collections' do
         expect(page).to have_field('Name', with: @collection_permission_all_restricted_name, readonly: true)
 
         expect(page).to have_checked_field('Collections')
@@ -161,7 +195,7 @@ describe 'Updating Collection Permissions when collections are not accessible by
         wait_for_ajax
       end
 
-      it 'displays the collection permission with 1 of 3 selected collection' do
+      it 'displays the collection permission with 1 selected collection' do
         expect(page).to have_field('Name', with: @collection_permission_some_restricted_name, readonly: true)
 
         expect(page).to have_checked_field('Selected Collections')
@@ -191,7 +225,7 @@ describe 'Updating Collection Permissions when collections are not accessible by
           click_on 'Submit'
         end
 
-        it 'successfully updates the collection permission and redirects to the show page and displaying the collection permission information with 1 of 3 selected collections' do
+        it 'successfully updates the collection permission and redirects to the show page and displaying the collection permission information with 1 selected collections' do
           expect(page).to have_content('Collection Permission was successfully updated.')
 
           expect(page).to have_content(@collection_permission_some_restricted_name)
@@ -223,7 +257,7 @@ describe 'Updating Collection Permissions when collections are not accessible by
         wait_for_ajax
       end
 
-      it 'displays the collection permission with 3 of 3 selected collection' do
+      it 'displays the collection permission with 3 selected collection' do
         expect(page).to have_field('Name', with: @collection_permission_some_restricted_name, readonly: true)
 
         expect(page).to have_checked_field('Selected Collections')
@@ -250,7 +284,7 @@ describe 'Updating Collection Permissions when collections are not accessible by
         visit permission_path(@collection_permission_some_restricted['concept_id'])
       end
 
-      it 'displays the collection permission information with 3 of 3 selected collections' do
+      it 'displays the collection permission information with 3 selected collections' do
         expect(page).to have_content(@collection_permission_some_restricted_name)
 
         # we should see all 3 entry ids

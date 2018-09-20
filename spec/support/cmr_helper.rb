@@ -1,5 +1,5 @@
 module Helpers
-  module CmrHelper
+  module CmrHelpers
     def cmr_client
       Cmr::Client.client_for_environment(Rails.configuration.cmr_env, Rails.configuration.services)
     end
@@ -18,6 +18,28 @@ module Helpers
         elastic_response = elastic_conn.post('_refresh')
 
         Rails.logger.error "Error refreshing ElasticSearch [#{elastic_response.status}] #{elastic_response.body}" unless elastic_response.success?
+      end
+    end
+
+    def clear_cache
+      ActiveSupport::Notifications.instrument 'mmt.performance', activity: 'Helpers::CmrHelper#clear_cache' do
+        cmr_conn = Faraday.new
+        cmr_response = cmr_conn.post('http://localhost:2999/clear-cache')
+        Rails.logger.error "Error clearing CMR cache (2999) [#{cmr_response.status}] #{cmr_response.body}" unless cmr_response.success?
+
+        cmr_response = cmr_conn.post('http://localhost:3011/caches/clear-cache?token=mock-echo-system-token')
+        Rails.logger.error "Error clearing CMR cache (3011) [#{cmr_response.status}] #{cmr_response.body}" unless cmr_response.success?
+      end
+    end
+
+    # This method reindexes groups, which may be required when catalog item ACLs (collection permissions) are added or changed
+    def reindex_permitted_groups
+      ActiveSupport::Notifications.instrument 'mmt.performance', activity: 'Helpers::CmrHelper#reindex_permitted_groups' do
+        cmr_conn = Faraday.new(url: 'http://localhost:3002')
+        cmr_conn.headers['Echo-Token'] = 'mock-echo-system-token'
+        cmr_response = cmr_conn.post('jobs/reindex-collection-permitted-groups')
+
+        Rails.logger.error "Error Reindexing Permitted Groups [#{cmr_response.status}] #{cmr_response.body}" unless cmr_response.success?
       end
     end
 

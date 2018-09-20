@@ -40,7 +40,7 @@ describe 'Updating a Service Entry', reset_provider: true do
 
     context 'when the user has the required permissions', js: true do
       before :all do
-        @group_permissions = add_permissions_to_group(@service_entry_group['concept_id'], 'update', 'EXTENDED_SERVICE', 'MMT_2')
+        @group_permissions = add_provider_permissions_to_group(@service_entry_group['concept_id'], 'update', 'EXTENDED_SERVICE', 'MMT_2')
       end
 
       after :all do

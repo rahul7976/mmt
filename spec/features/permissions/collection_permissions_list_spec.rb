@@ -1,5 +1,3 @@
-require 'rails_helper'
-
 describe 'Collection Permissions Index page', reset_provider: true do
   let(:group1_id) { 'AG1200000069-MMT_2' }
   let(:group2_id) { 'AG1200000070-MMT_2' }
@@ -27,7 +25,7 @@ describe 'Collection Permissions Index page', reset_provider: true do
       login
     end
 
-    context 'when there are no permissions' do
+    context 'when there are no collection permissions' do
       before do
         empty = '{"hits": 0, "took": 7, "items": []}'
         empty_response = cmr_success_response(empty)
@@ -36,18 +34,18 @@ describe 'Collection Permissions Index page', reset_provider: true do
         visit permissions_path
       end
 
-      it 'indicates there are no permissions' do
+      it 'indicates there are no collection permissions' do
         within '#custom-permissions-table' do
           expect(page).to have_content('No permissions found.')
         end
       end
     end
 
-    context 'when there are permissions' do
+    context 'when there are collection permissions' do
       before do
-        add_associated_permissions_to_group(group_id: group1_id, name: 'Testing Collection Permission Index Regular 01', permissions: %w(read))
-        add_associated_permissions_to_group(group_id: group2_id, name: 'Testing Collection Permission Index Regular 02', permissions: %w(read order))
-        add_associated_permissions_to_group(group_id: group3_id, name: 'Testing Collection Permission Index Regular 03', permissions: %w(read order))
+        add_collection_permission_to_group(group_id: group1_id, name: 'Testing Collection Permission Index Regular 01', permissions: %w(read))
+        add_collection_permission_to_group(group_id: group2_id, name: 'Testing Collection Permission Index Regular 02', permissions: %w(read order))
+        add_collection_permission_to_group(group_id: group3_id, name: 'Testing Collection Permission Index Regular 03', permissions: %w(read order))
 
         visit permissions_path
       end

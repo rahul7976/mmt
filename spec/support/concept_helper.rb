@@ -1,6 +1,6 @@
 module Helpers
   # :nodoc:
-  module ConceptHelper
+  module ConceptHelpers
     def group_concept_from_path
       current_path.sub('/groups/', '')
     end

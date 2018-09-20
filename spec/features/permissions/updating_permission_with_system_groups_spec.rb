@@ -1,6 +1,3 @@
-# MMT-843
-require 'rails_helper'
-
 describe 'Updating Collection Permissions with System Groups', reset_provider: true do
   before :all do
     @group_name = random_group_name

@@ -150,16 +150,16 @@ RSpec.configure do |config|
   # Helpers
   config.include Helpers::ControllerHelpers
   config.include Helpers::AjaxHelpers
-  config.include Helpers::CmrHelper
+  config.include Helpers::CmrHelpers
   config.include Helpers::DateHelpers
   config.include Helpers::DraftHelpers
   config.include Helpers::UmmSDraftHelpers
-  config.include Helpers::GroupHelper
+  config.include Helpers::GroupHelpers
   config.include Helpers::SearchHelpers
   config.include Helpers::UserHelpers
-  config.include Helpers::BulkUpdateHelper
-  config.include Helpers::CollectionAssociationHelper
-  config.include Helpers::ConceptHelper
+  config.include Helpers::BulkUpdateHelpers
+  config.include Helpers::CollectionAssociationHelpers
+  config.include Helpers::ConceptHelpers
 
   # Precompile assets before running the test suite
   # config.before(:suite) do

@@ -8,7 +8,7 @@ module Helpers
     end
 
     # Publishes a collection draft and returns the new created collection as well as the most recent draft
-    def publish_collection_draft(revision_count: 1, include_new_draft: false, provider_id: 'MMT_2', native_id: nil, modified_date: nil, short_name: nil, entry_title: nil, version: nil, collection_data_type: nil)
+    def publish_collection_draft(revision_count: 1, include_new_draft: false, provider_id: 'MMT_2', native_id: nil, modified_date: nil, short_name: nil, entry_title: nil, version: nil, collection_data_type: nil, access_constraint_value: nil, token: 'token')
       ActiveSupport::Notifications.instrument 'mmt.performance', activity: 'Helpers::DraftHelpers#publish_collection_draft' do
         user = User.where(urs_uid: 'testuser').first
 
@@ -36,7 +36,7 @@ module Helpers
           # Adds metadata dates (this method saves the object)
           draft.add_metadata_dates(date: modified_date, save_record: false) unless modified_date.nil?
 
-          ingest_response = cmr_client.ingest_collection(draft.draft.to_json, draft.provider_id, draft.native_id, 'token')
+          ingest_response = cmr_client.ingest_collection(draft.draft.to_json, draft.provider_id, draft.native_id, token)
 
           # We need the native id of the draft to create another draft below
           native_id = draft.native_id
@@ -55,7 +55,7 @@ module Helpers
         revision_id = ingest_response.body['revision-id']
         content_type = "application/#{Rails.configuration.umm_c_version}; charset=utf-8"
 
-        concept_response = cmr_client.get_concept(concept_id, 'token', { 'Accept' => content_type }, revision_id)
+        concept_response = cmr_client.get_concept(concept_id, token, { 'Accept' => content_type }, revision_id)
 
         raise Array.wrap(concept_response.body['errors']).join(' /// ') if concept_response.body.key?('errors')
 

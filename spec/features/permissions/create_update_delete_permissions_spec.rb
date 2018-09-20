@@ -1,7 +1,4 @@
 # tests for create, show, edit, update, delete
-
-require 'rails_helper'
-
 describe 'Collection Permissions', reset_provider: true, js: true do
   let(:group1_id) { 'AG1200000069-MMT_2' }
   let(:group2_id) { 'AG1200000070-MMT_2' }
@@ -232,7 +229,7 @@ describe 'Collection Permissions', reset_provider: true, js: true do
 
   context 'when deleting a collection permission' do
     before do
-      @collection_permission_to_delete = add_associated_permissions_to_group(group_id: group3_id, name: 'Testing Delete Collection Permission 01')
+      @collection_permission_to_delete = add_collection_permission_to_group(group_id: group3_id, name: 'Testing Delete Collection Permission 01')
 
       visit permission_path(@collection_permission_to_delete['concept_id'])
 

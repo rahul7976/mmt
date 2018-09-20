@@ -6,7 +6,7 @@ describe 'Deleting a Service Entry', reset_provider: true do
     @service_entry_group = create_group(name: 'Service Entries Group for Permissions [DELETE]', members: ['testuser'])
 
     # give the group permission to delete
-    @delete_permissions = add_permissions_to_group(@service_entry_group['concept_id'], 'delete', 'EXTENDED_SERVICE', 'MMT_2')
+    @delete_permissions = add_provider_permissions_to_group(@service_entry_group['concept_id'], 'delete', 'EXTENDED_SERVICE', 'MMT_2')
   end
 
   after :all do
