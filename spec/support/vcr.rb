@@ -5,6 +5,7 @@ VCR.configure do |c|
   c.hook_into :faraday
   c.allow_http_connections_when_no_cassette = false
   c.ignore_localhost = true
+  c.debug_logger = File.open('./log/vcr.log', 'w')
   c.default_cassette_options = { allow_playback_repeats: true }
   c.after_http_request do |request, response|
     begin
