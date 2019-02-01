@@ -16,7 +16,7 @@
 
     <section class="eui-callout-box col-left">
       <div class="open-drafts">
-        <h3 class="eui-callout-box__title green"><%= current_user.provider_id %> Variable Drafts</h2>
+        <h3 class="eui-callout-box__title green"><%= current_user.provider_id %> Variable Drafts</h3>
         <div class="eui-callout-box__list">
           <ul>
             <% unless @drafts.any? %>
@@ -38,6 +38,14 @@
             <% end %>
           </ul>
         </div>
+      </div>
+    </section>
+
+    <section class="eui-callout-box col-left">
+      <h3 class="eui-callout-box__title green">UVG</h3>
+      <div class="eui-callout-box__list">
+        <%= button_to 'UMM-Var Generate Max', generate_variables_naive_path, method: :post, params: { collection_id: 'C1234-CHPROV', size: 'max' }, class: 'eui-btn--blue submit' %>
+        <%= button_to 'UMM-Var Generate Small', generate_variables_naive_path, method: :post, params: { collection_id: 'C1234-CHPROV', size: 'small' }, class: 'eui-btn--blue submit' %>
       </div>
     </section>
   </article>

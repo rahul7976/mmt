@@ -363,7 +363,7 @@ module Cmr
               '/access-control/groups'
             end
       headers = {
-        'Content-Type' => 'application/json'
+        'Content-Type' => 'application/json' # TODO: unnecessary?
       }
       post(url, group.to_json, headers.merge(token_header(token)))
     end
@@ -375,7 +375,7 @@ module Cmr
               "/access-control/groups/#{concept_id}"
             end
       headers = {
-        'Content-Type' => 'application/json'
+        'Content-Type' => 'application/json' # TODO: unnecessary?
       }
       put(url, group.to_json, headers.merge(token_header(token)))
     end
@@ -515,6 +515,23 @@ module Cmr
       headers = { 'Accept' => 'application/json; charset=utf-8' }
 
       get(url, options, headers.merge(token_header(token)))
+    end
+
+    # TODO TEMP for testing of UVG endpoints
+
+    def post_small_uvg(params)
+      url = 'http://localhost:4567/small'
+      # params = { key1: 'value1' }
+
+      post(url, params.to_json)
+    end
+
+    def post_max_uvg(params)
+      # url = 'http://localhost:4567/max'
+      # params = { key2: 'value2' }
+      url = 'http://localhost:4000/generate_variables/naive'
+
+      post(url, params.to_json)
     end
 
     private
