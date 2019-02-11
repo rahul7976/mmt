@@ -48,8 +48,6 @@ Rails.application.routes.draw do
   post '/invite_user' => 'groups#invite', as: 'invite_user'
   get '/accept_invite/:token' => 'groups#accept_invite', as: 'accept_invite'
 
-  post '/generate_variables/naive' => 'generate_variables#naive'
-
   post '/bulk_updates/check_task_name' => 'bulk_updates#check_task_name'
   resources :bulk_updates, only: [:index, :show, :create] do
     collection do
@@ -78,6 +76,10 @@ Rails.application.routes.draw do
   get '/variables/:id/revert/:revision_id' => 'variables#revert', as: 'revert_variable'
   get '/variables/:id/clone' => 'variables#clone', as: 'clone_variable'
   get '/variables/:id/download_json(/:revision_id)' => 'variables#download_json', as: 'download_json_variable'
+
+  post '/generate_variables/naive' => 'generate_variables#naive'
+  post '/generate_variables/augment' => 'generate_variables#augment'
+  # resources :generate_variables, only: [:create, :update]
 
   resources :services, only: [:show, :create, :edit, :destroy] do
     resources :collection_associations, only: [:index, :new, :create] do

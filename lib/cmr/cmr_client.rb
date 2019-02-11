@@ -519,17 +519,40 @@ module Cmr
 
     # TODO TEMP for testing of UVG endpoints
 
-    def post_small_uvg(params)
-      url = 'http://localhost:4567/small'
-      # params = { key1: 'value1' }
+    # def post_small_uvg(params)
+    #   url = 'http://localhost:4567/small'
+    #   # params = { key1: 'value1' }
+    #
+    #   post(url, params.to_json)
+    # end
+
+    def get_uvg_naive(params)
+      url = 'http://localhost:4000/generate'
+
+      get(url, params)
+    end
+
+    def post_uvg_naive(params)
+      # url = 'http://localhost:4000/generate_variables/naive'
+      url = 'http://localhost:4000/generate'
 
       post(url, params.to_json)
     end
 
-    def post_max_uvg(params)
-      # url = 'http://localhost:4567/max'
-      # params = { key2: 'value2' }
-      url = 'http://localhost:4000/generate_variables/naive'
+    def uvg_augment_definitions_stub(params)
+      url = 'http://localhost:4000/augment/definitions_stub'
+
+      post(url, params.to_json)
+    end
+
+    def uvg_augment_estimates_stub(params)
+      url = 'http://localhost:4000/augment/estimates_stub'
+
+      post(url, params.to_json)
+    end
+
+    def uvg_augment_keywords_stub(params)
+      url = 'http://localhost:4000/augment/keywords_stub'
 
       post(url, params.to_json)
     end
