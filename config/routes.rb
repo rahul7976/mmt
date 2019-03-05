@@ -59,7 +59,10 @@ Rails.application.routes.draw do
 
   resource :bulk_updates_search, only: [:new]
 
-  resources :collections, only: [:show, :edit, :destroy]
+  resources :collections, only: [:show, :edit, :destroy] do
+    resources :variable_associations, only: [:index]
+  end
+
   get '/collections/:id/revisions' => 'collections#revisions', as: 'collection_revisions'
   get '/collections/:id/revert/:revision_id' => 'collections#revert', as: 'revert_collection'
   get '/collections/:id/clone' => 'collections#clone', as: 'clone_collection'
