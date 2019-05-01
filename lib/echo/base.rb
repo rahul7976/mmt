@@ -16,20 +16,26 @@ module Echo
 
         # Set timeout to 300s to match nginx timeout
         conn.options[:timeout] = 300
-
+        #conn.options[:open_timeout] = 300
         conn.adapter Faraday.default_adapter
       end
     end
 
     def make_request(url, body)
       parsed_body = Hash.send('from_xml', body).fetch('Envelope', {}).fetch('Body', {})
-
+      
+#start_time = Time.now.to_i
       Rails.logger.info("SOAP call: URL: #{url} - Params: #{parsed_body.keys.first}: #{parsed_body[parsed_body.keys.first].except('xmlns:ns2', 'xmlns:ns3', 'xmlns:ns4', 'token').inspect} - Time: #{Time.now.to_s(:log_time)}")
+      # why is there no rescue here?
       response = connection.post do |req|
+        #connection.options[:timeout] = 90
+        #connection.options[:open_timeout] = 90
+        #Rails.logger.info ("#{req}")
         req.headers['Content-Type'] = 'text/xml'
         req.body = body
       end
-
+      
+      # why is this not in the begin block
       echo_response = Echo::Response.new(response)
       begin
 
@@ -39,6 +45,9 @@ module Echo
       rescue => e
         Rails.logger.error "SOAP Error: #{e}"
       end
+#durration = Time.now.to_i - start_time
+#Rails.logger.warn("*******************\n\make_request is done - durration: #{durration}\n\n\n******")
+      # got here
 
       echo_response
     end

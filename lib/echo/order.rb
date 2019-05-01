@@ -49,9 +49,11 @@ module Echo
       if owner_guid.blank?
         '(guest)'
       else
+        Rails.logger.info("#{'*'*80}\nCache check, load from api?\n#{'*'*40}")
+        user = cached_owner
         # refactor to a new class in the future if/when it is needed
-        user = @client.get_user_names(@token, owner_guid).parsed_body
 
+        #user = @client.get_user_names(@token, owner_guid).parsed_body
         user.fetch('Item', {}).fetch('Name', '')
       end
     end
@@ -85,6 +87,13 @@ module Echo
     end
 
     private
+
+    def cached_owner
+      Rails.cache.fetch("owner.#{owner_guid}", expires_in: 15.minutes) do
+        Rails.logger.info("#{'*'*80}\nCache miss, load from api!\n#{'*'*40}")
+        @client.get_user_names(@token, owner_guid).parsed_body
+      end
+    end
 
     def format_date(date, default: nil)
       DateTime.parse(date).to_s(:echo_format)

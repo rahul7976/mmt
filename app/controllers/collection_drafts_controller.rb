@@ -96,7 +96,9 @@ class CollectionDraftsController < BaseDraftsController
 
     if get_resource.update_draft(params[:draft], current_user.urs_uid)
       flash[:success] = I18n.t("controllers.draft.#{plural_resource_name}.update.flash.success")
-
+      
+      Rails.logger.info "*********\nIssue with rolls: #{JSON.pretty_generate(get_resource.draft)}"
+      
       case params[:commit]
       when 'Done'
         redirect_to get_resource

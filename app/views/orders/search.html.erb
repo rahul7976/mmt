@@ -20,6 +20,7 @@
             <td colspan="8">No <%= current_user.provider_id %> orders found.</td>
           </tr>
         <% else %>
+          <% time_start = Time.now %>
           <% @orders.each_with_index do |order| %>
             <tr>
               <td><%= link_to order.state, order_path(order.guid) %></td>
@@ -31,6 +32,7 @@
               <td><%= link_to 'View Provider Order', provider_order_path(order.guid) %></td>
             </tr>
           <% end %>
+          <% Rails.logger.info("#{'*'*80}\n #{ ( Time.now - time_start ) * 1000.0 }") %>
         <% end %>
       </tbody>
     </table>

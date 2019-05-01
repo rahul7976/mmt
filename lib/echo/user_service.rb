@@ -16,6 +16,8 @@ module Echo
       end
 
       payload = wrap_with_envelope(builder)
+      
+      Rails.logger.info "#{'*'*80}\n #{caller[0..5].each { |item| item + "\n" }} \n #{'*'*40}"
 
       make_request(@url, payload)
     end
