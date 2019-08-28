@@ -1,4 +1,4 @@
-describe BulkUpdatesSearchesController, reset_provider: true do
+describe BulkUpdatesSearchesController, reset_provider: true, only_mmt_proper: true do
   describe 'GET #new' do
     before :all do
       5.times { publish_collection_draft }

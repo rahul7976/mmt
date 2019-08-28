@@ -1,4 +1,4 @@
-describe BulkUpdatesController, reset_provider: true do
+describe BulkUpdatesController, reset_provider: true, only_mmt_proper: true do
   describe 'GET #index' do
     context 'When bulk updates are enabled' do
       before do

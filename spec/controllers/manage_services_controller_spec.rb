@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe ManageServicesController do
+describe ManageServicesController, only_mmt_proper: true do
   describe 'GET #show' do
     before do
       sign_in

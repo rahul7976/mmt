@@ -1,4 +1,4 @@
-describe VariableDraftsController, reset_provider: true do
+describe VariableDraftsController, reset_provider: true, only_mmt_proper: true do
   describe 'GET #index' do
     before do
       sign_in

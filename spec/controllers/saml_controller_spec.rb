@@ -1,4 +1,4 @@
-describe SamlController do
+describe SamlController, only_mmt_proper: true do
   describe 'GET #sso' do
     before do
       get :sso

@@ -166,6 +166,10 @@ RSpec.configure do |config|
     Helpers::Instrumentation.report_performance
   end
 
+  # declare an exclusion filter
+  # tests with this filter will be skipped
+  config.filter_run_excluding only_mmt_proper: true
+
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
 

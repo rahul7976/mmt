@@ -1,4 +1,4 @@
-describe VariableGenerationProcessesController, reset_provider: true do
+describe VariableGenerationProcessesController, reset_provider: true, only_mmt_proper: true do
   before do
     sign_in
   end

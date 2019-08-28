@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe ManageVariablesController do
+describe ManageVariablesController, only_mmt_proper: true do
   describe 'GET #show' do
     before do
       sign_in
