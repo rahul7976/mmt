@@ -110,7 +110,7 @@ To insert a sample draft with every field completed:
 
 ### OpenSSL Issue
 
-* If you receive a error from running `rake cmr:start_and_load` like
+* If you receive a error from run `rake cmr:start_and_load` like
 
     Faraday::Error::ConnectionFailed: SSL_connect returned=1 errno=0 state=SSLv3 read server certificate B: certificate verify failed
 
